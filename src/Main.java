@@ -46,7 +46,7 @@ public class Main {
                     in.nextLine(); // очищаем буфер
                     String infixstr = in.nextLine();
                     infixExspression = infixstr.split(" ");
-                    convFunction(infixExspression);
+//                    convFunction(infixExspression);
                     System.out.println("Результат: " + convInFixToPostFix(infixExspression));
                     break;
             }
@@ -82,17 +82,17 @@ public class Main {
         for (int i = 0; i < expression.length(); i++) {
             char ch = expression.charAt(i);
 
-            // Если текущий символ является частью числа (цифра или точка) или оператором
+            // если текущий символ является частью числа (цифра или точка) или оператором
             if (Character.isDigit(ch) || ch == '.' || isOperator(ch)) {
                 tokens.add(Character.toString(ch)); // Добавляем каждый символ как отдельный токен
             }
         }
 
-        // Возвращаем полученные токены в виде массива
+        // возвращаем полученные токены в виде массива
         return tokens.toArray(new String[0]);
     }
 
-    // Вспомогательный метод для проверки, является ли символ оператором
+    // метод для проверки, является ли символ оператором
     private static boolean isOperator(char ch) {
         return ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '^';
     }
@@ -227,34 +227,36 @@ public class Main {
         return stack.pop(); // Возвращение результата
     }
 
-    // Метод для преобразования инфиксного выражения в постфиксное
     public static String convInFixToPostFix(String[] infixTokens) {
-        Stack<String> operators = new Stack<>(); // Стек операторов
-        Queue<String> postfix = new LinkedList<>(); // Очередь для постфиксного выражения
+        Stack<String> operators = new Stack<>();
+        Queue<String> postfix = new LinkedList<>();
+
         for (String token : infixTokens) {
-            if (token.matches("\\-?\\d+(\\.\\d+)?")) { // Если элемент - число
+            // Проверяем, является ли токен числом или функцией с аргументами
+            if (token.matches("\\-?\\d+(\\.\\d+)?") || token.matches("[a-zA-Z]+\\(.*?\\)")) {
                 postfix.add(token);
-            } else if (token.equals("(")) { // Если токен - открывающая скобка
+            } else if (token.equals("(")) {
                 operators.push(token);
-            } else if (token.equals(")")) { // Если токен - закрывающая скобка
+            } else if (token.equals(")")) {
                 while (!operators.isEmpty() && !operators.peek().equals("(")) {
                     postfix.add(operators.pop());
                 }
-                if (operators.isEmpty()) {
-                    throw new IllegalStateException("Стек операторов пуст");
-                }
-                operators.pop(); // Удаление открывающей скобки из стека
-            } else { // Если токен - оператор
-                while (!operators.isEmpty() && priority(token) <= priority(operators.peek())) {
+                operators.pop(); // Удаление '(' из стека
+            } else {
+                // Управление приоритетом операторов
+                while (!operators.isEmpty() && priority(operators.peek()) >= priority(token)) {
                     postfix.add(operators.pop());
                 }
-                operators.push(token); // Добавление текущего оператора в стек
+                operators.push(token); // Добавляем оператор в стек
             }
         }
-        while (!operators.isEmpty()) { // Добавление оставшихся операторов в очередь
+
+        while (!operators.isEmpty()) { // Добавляем оставшиеся операторы из стека в выходную очередь
             postfix.add(operators.pop());
         }
-        return String.join(" ", postfix); // Возвращение постфиксного выражения в виде строки
+
+        return String.join(" ", postfix); // Возвращаем постфиксное выражение в виде строки
     }
+
 }
 
