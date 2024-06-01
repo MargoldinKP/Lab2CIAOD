@@ -190,11 +190,11 @@ public class Main {
             }
         }
 
-        while (!operators.isEmpty()) { // Выполнение оставшихся операций
+        while (!operators.isEmpty()) { // выполнение оставшихся операций
             operands.push(applyOperation(operands.pop(), operands.pop(), operators.pop(), operationMap));
         }
 
-        return operands.pop(); // Возвращение результата
+        return operands.pop(); // возвращение результата
     }
 
     // Метод для применения операции к операндам
@@ -208,23 +208,23 @@ public class Main {
 
     // Метод для вычисления постфиксного выражения
     public static double calcPostfix(String[] queue) {
-        Stack<Double> stack = new Stack<>(); // Стек для выполнения операций
+        Stack<Double> stack = new Stack<>(); // стек для выполнения операций
         for (String item : queue) {
-            if (item.matches("\\-?\\d+(\\.\\d+)?")) { // Если элемент - число
+            if (item.matches("\\-?\\d+(\\.\\d+)?")) { // если элемент - число
                 stack.push(Double.parseDouble(item));
-            } else if (stack.size() < 2) { // Если в стеке недостаточно операндов
+            } else if (stack.size() < 2) { // если в стеке недостаточно операндов
                 throw new IllegalArgumentException("Недостаточно операндов в стеке для операции " + item);
-            } else { // Если элемент - оператор
+            } else { // если элемент - оператор
                 Double operand2 = stack.pop();
                 Double operand1 = stack.pop();
                 double result = applyOperation(operand1, operand2, item);
                 stack.push(result);
             }
         }
-        if (stack.size() != 1) { // Проверка на корректность вычислений
+        if (stack.size() != 1) { // проверка на корректность вычислений
             throw new IllegalStateException("В стеке должен остаться один элемент после вычисления");
         }
-        return stack.pop(); // Возвращение результата
+        return stack.pop(); // возвращение результата
     }
 
     public static String convInFixToPostFix(String[] infixTokens) {
@@ -232,7 +232,7 @@ public class Main {
         Queue<String> postfix = new LinkedList<>();
 
         for (String token : infixTokens) {
-            // Проверяем, является ли токен числом или функцией с аргументами
+            // проверяем, является ли токен числом или функцией с аргументами
             if (token.matches("\\-?\\d+(\\.\\d+)?") || token.matches("[a-zA-Z]+\\(.*?\\)")) {
                 postfix.add(token);
             } else if (token.equals("(")) {
@@ -241,21 +241,21 @@ public class Main {
                 while (!operators.isEmpty() && !operators.peek().equals("(")) {
                     postfix.add(operators.pop());
                 }
-                operators.pop(); // Удаление '(' из стека
+                operators.pop(); // удаление '(' из стека
             } else {
-                // Управление приоритетом операторов
+                // управление приоритетом операторов
                 while (!operators.isEmpty() && priority(operators.peek()) >= priority(token)) {
                     postfix.add(operators.pop());
                 }
-                operators.push(token); // Добавляем оператор в стек
+                operators.push(token); // добавляем оператор в стек
             }
         }
 
-        while (!operators.isEmpty()) { // Добавляем оставшиеся операторы из стека в выходную очередь
+        while (!operators.isEmpty()) { // добавляем оставшиеся операторы из стека в выходную очередь
             postfix.add(operators.pop());
         }
 
-        return String.join(" ", postfix); // Возвращаем постфиксное выражение в виде строки
+        return String.join(" ", postfix); // возвращаем постфиксное выражение в виде строки
     }
 
 }
